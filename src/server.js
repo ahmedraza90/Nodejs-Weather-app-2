@@ -1,54 +1,50 @@
-const express   = require('express')
-const geo_code  = require('./utils/geo_code')
-const weather   = require('./utils/weather')
-const hbs       = require('hbs')
-const path      = require('path')
-const app       = express()
+const express  = require('express')
+const geo_code = require('./utils/geo_code')
+const weather  = require('./utils/weather')
+const path =require('path')
 
-//path
-const views     = path.join(__dirname,'../templates/views')
-const partials  = path.join(__dirname,'../templates/partials')
-const public    = path.join(__dirname,'../public')
+const app = express()
 
-//template engine = hbs
-app.set('view engine','hbs')
-app.set('views',views)
-hbs.registerPartials(partials)
+const views  = path.join(__dirname,'../templates/views')
+const public = path.join(__dirname,'../public')
 
-//loading static files
 app.use(express.static(public))
 
+app.set('view engine','ejs')//https://www.digitalocean.com/community/tutorials/how-to-use-ejs-to-template-your-node-application
+app.set('views',views)
 
-app.get('',(req,res)=>{
-    console.log(req.query)
-    res.render('home')
+app.get('/home',(req,res)=>{
+    res.render('home',{
+        title:'home page'
+    })
 })
+app.get('/about',(req,res)=>{
+    res.render('about',{
+        title:'about page'
+    })
+})
+app.get('/contact',(req,res)=>{
+    res.render('contact',{
+        title:'contact page'
+    })
+})
+
 
 //weather api
 app.get('/weather',(req,res)=>{
-    // if(!req.query.location){
-    //    return res.send('404 error')
-    // }
-    
     geo_code(req.query.location)
-    .then((resp)=>{
-        weather(resp.latitude,resp.longtitude)
-        .then((resp)=>{
-            return res.send(resp)
+    .then((ress)=>{
+        
+        weather(ress.longtitude,ress.latitude)
+        .then((data)=>{
+            res.send(data)
         })
     })
     .catch((err)=>{
-        return res.send({
-            error: err
+        res.send({
+            error:err
         })
     })
-
-})
-app.get('*',(req,res)=>{
-    res.send('404 error')
 })
 
-const port = process.env.PORT || 3000
-app.listen(port,()=>{
-    console.log('port number:   '+ port)
-})
+app.listen(3000)

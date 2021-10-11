@@ -46,5 +46,12 @@ app.get('/weather',(req,res)=>{
         })
     })
 })
-
-app.listen(3000)
+// ENVIRONMENT VARIABLES IN NODEJS
+// https://www.section.io/engineering-education/nodejs-environment-variables/
+// In Node.js, process.env is a global variable that is injected during runtime.
+// It is a view of the state of the system environment variables. When we set an environment variable, 
+// it is loaded into process.env during runtime and can later be accessed.
+const port = process.env.PORT || 3000
+app.listen(port,(port)=>{
+    console.log(`server is up on ${port}`)
+})
